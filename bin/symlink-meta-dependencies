@@ -2,7 +2,7 @@
 
 const async = require('async');
 const chalk = require('chalk');
-const debug = require('debug')('symlink-meta-dependencies');
+const debug = require('debug')('inject-meta-dependencies');
 const fs = require('fs');
 const fsExtra = require('fs.extra');
 const getJson = require('../lib/getJson');
@@ -12,7 +12,7 @@ const path = require('path');
 const program = require('commander');
 
 if ( ! process.argv[2] || process.argv[2] === '--help')
-  return console.log(`\n  usage:\n\n    symlink-meta-dependencies [child repository path] [--dry-run]\n`);
+  return console.log(`\n  usage:\n\n    inject-meta-dependencies [child repository path] [--dry-run]\n`);
 
 let childRepoPath = process.argv[2] === 'blank' ?
                       process.argv[3] :
@@ -46,22 +46,23 @@ getMetaDependencies(folders, (err, graph) => {
 
     const numberOfDeps = childGraph.size;
 
-    console.log(chalk.green(`${childProjectName} has ${numberOfDeps} dependencies to symlink`));
+    console.log(chalk.green(`${childProjectName} has ${numberOfDeps} dependencies to inject`));
 
     async.forEachOf(childGraph.deps, (version, childProjectName, cb) => {
 
-      let source = graph[childProjectName].path;
+      const sourceInfo = graph[childProjectName];
+      let source = sourceInfo.path;
       let target = path.join(childRepoPath, 'node_modules', childProjectName)
-
-      console.log(chalk.cyan(`creating symlink: ${target} -> ${source}`));
 
       fs.exists(target, (exists) => {
 
-        if ( ! exists) return fs.symlink(source, target, 'dir', cb);
+        if ( ! exists) {
+          return propagateSource(sourceInfo, target, cb);
+        }
 
         return fsExtra.rmrf(target, (err) => {
           if (err) throw err;
-          return fs.symlink(source, target, 'dir', cb);
+          return propagateSource(sourceInfo, target, cb);
         });
 
       });
@@ -69,10 +70,55 @@ getMetaDependencies(folders, (err, graph) => {
     }, (err) => {
       if (err) throw err;
 
-      console.log(chalk.green(`symlinked ${numberOfDeps} dependencies to ${childProjectName}`))
+      console.log(chalk.green(`injected ${numberOfDeps} dependencies to ${childProjectName}`))
 
     });
 
   });
 
 });
+
+function propagateSource(sourceInfo, target, cb) {
+  const source = sourceInfo.path;
+
+  if (true === sourceInfo.linkContent) {
+    console.log(chalk.cyan(`copying content: ${target} <- ${source}`));
+
+    return fs.mkdir(target, (err) => {
+      if (err) throw err;
+      return fsExtra.copyRecursive(source, target, cb);
+    });
+  } else {
+    console.log(chalk.cyan(`creating symlink: ${target} -> ${source}`));
+
+    return fs.symlink(source, target, 'dir', cb);
+  }
+}
+
+function symlinkContent(source, target, cb) {
+
+  console.log(`Symlinking content of ${source} to ${target} ...`);
+  
+  function mkSymlink(file, cb) {
+    const linkSource = path.join(source, file);
+    const linkTarget = path.join(target, file);
+    if ('package.json' === file) {
+      console.log(` ... copying ${linkSource} to ${linkTarget} ...`);
+      fs.copyFile(linkSource, linkTarget, cb);
+    } else {
+      console.log(` ... symlinking ${linkSource} to ${linkTarget} ...`);
+      fs.symlink(linkSource, linkTarget, cb);
+    }
+  }
+
+  fs.mkdir(target, (err) => {
+    if (err) throw err;
+    return fs.readdir(source, (err, files) => {
+      if (err) throw err;
+
+      return async.map(files, mkSymlink, (err) => {
+        return cb(err);
+      })
+    });
+  });
+}

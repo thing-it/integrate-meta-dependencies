@@ -1,10 +1,10 @@
 {
-  "name": "symlink-meta-dependencies",
-  "version": "0.0.3",
-  "description": "symlink all of a project's dependencies which appear in the project's .meta file",
+  "name": "@thing-it/devtools",
+  "version": "0.0.1",
+  "description": "symlink/copy all of a project's dependencies which appear in the project's .meta file",
   "main": "index.js",
   "bin": {
-    "symlink-meta-dependencies": "./bin/symlink-meta-dependencies"
+    "inject-meta-dependencies": "./bin/symlink-meta-dependencies"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
