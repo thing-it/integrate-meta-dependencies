@@ -2,7 +2,7 @@
 
 const async = require('async');
 const chalk = require('chalk');
-const debug = require('debug')('inject-meta-dependencies');
+const debug = require('debug')('integrate-meta-dependencies');
 const fs = require('fs');
 const fsExtra = require('fs.extra');
 const getJson = require('../lib/getJson');
@@ -12,7 +12,7 @@ const path = require('path');
 const program = require('commander');
 
 if ( ! process.argv[2] || process.argv[2] === '--help')
-  return console.log(`\n  usage:\n\n    inject-meta-dependencies [child repository path] [--dry-run]\n`);
+  return console.log(`\n  usage:\n\n    integrate-meta-dependencies [child repository path] [--dry-run]\n`);
 
 let childRepoPath = process.argv[2] === 'blank' ?
                       process.argv[3] :
@@ -46,7 +46,7 @@ getMetaDependencies(folders, (err, graph) => {
 
     const numberOfDeps = childGraph.size;
 
-    console.log(chalk.green(`${childProjectName} has ${numberOfDeps} dependencies to inject`));
+    console.log(chalk.green(`${childProjectName} has ${numberOfDeps} dependencies to integrate`));
 
     async.forEachOf(childGraph.deps, (version, childProjectName, cb) => {
 
@@ -70,7 +70,7 @@ getMetaDependencies(folders, (err, graph) => {
     }, (err) => {
       if (err) throw err;
 
-      console.log(chalk.green(`injected ${numberOfDeps} dependencies to ${childProjectName}`))
+      console.log(chalk.green(`integrated ${numberOfDeps} dependencies to ${childProjectName}`))
 
     });
 
@@ -93,32 +93,4 @@ function propagateSource(sourceInfo, target, cb) {
 
     return fs.symlink(source, target, 'dir', cb);
   }
-}
-
-function symlinkContent(source, target, cb) {
-
-  console.log(`Symlinking content of ${source} to ${target} ...`);
-  
-  function mkSymlink(file, cb) {
-    const linkSource = path.join(source, file);
-    const linkTarget = path.join(target, file);
-    if ('package.json' === file) {
-      console.log(` ... copying ${linkSource} to ${linkTarget} ...`);
-      fs.copyFile(linkSource, linkTarget, cb);
-    } else {
-      console.log(` ... symlinking ${linkSource} to ${linkTarget} ...`);
-      fs.symlink(linkSource, linkTarget, cb);
-    }
-  }
-
-  fs.mkdir(target, (err) => {
-    if (err) throw err;
-    return fs.readdir(source, (err, files) => {
-      if (err) throw err;
-
-      return async.map(files, mkSymlink, (err) => {
-        return cb(err);
-      })
-    });
-  });
 }

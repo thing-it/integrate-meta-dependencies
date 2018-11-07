@@ -1,17 +1,17 @@
 {
   "name": "@thing-it/devtools",
   "version": "0.0.1",
-  "description": "symlink/copy all of a project's dependencies which appear in the project's .meta file",
+  "description": "integrate all of a project's dependencies which appear in the project's .meta file",
   "main": "index.js",
   "bin": {
-    "inject-meta-dependencies": "./bin/symlink-meta-dependencies"
+    "integrate-meta-dependencies": "./bin/integrate-meta-dependencies"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mateodelnorte/symlink-meta-dependencies.git"
+    "url": "git+https://github.com/thing-it/devtools.git"
   },
   "keywords": [
     "meta",
@@ -20,9 +20,9 @@
   "author": "hi@iammattwalters.com",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/mateodelnorte/symlink-meta-dependencies/issues"
+    "url": "https://github.com/thing-it/devtools/issues"
   },
-  "homepage": "https://github.com/mateodelnorte/symlink-meta-dependencies#readme",
+  "homepage": "https://github.com/thing-it/devtools#readme",
   "dependencies": {
     "async": "^2.5.0",
     "chalk": "^1.1.3",
