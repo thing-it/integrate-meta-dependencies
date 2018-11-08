@@ -1,6 +1,6 @@
 {
   "name": "@thing-it/integrate-meta-dependencies",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "integrate all of a project's dependencies which appear in the project's .meta file",
   "main": "index.js",
   "bin": {
