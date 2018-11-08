@@ -9,7 +9,6 @@ const getJson = require('../lib/getJson');
 const getMetaDependencies = require('../lib/getMetaDependencies');
 const getMetaFile = require('get-meta-file');
 const path = require('path');
-const program = require('commander');
 
 if ( ! process.argv[2] || process.argv[2] === '--help')
   return console.log(`\n  usage:\n\n    integrate-meta-dependencies [child repository path] [--dry-run]\n`);
