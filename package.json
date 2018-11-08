@@ -1,5 +1,5 @@
 {
-  "name": "@thing-it/devtools",
+  "name": "@thing-it/integrate-meta-dependencies",
   "version": "0.0.1",
   "description": "integrate all of a project's dependencies which appear in the project's .meta file",
   "main": "index.js",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/thing-it/devtools.git"
+    "url": "git+https://github.com/thing-it/integrate-meta-dependencies.git"
   },
   "keywords": [
     "meta",
@@ -20,9 +20,9 @@
   "author": "hi@iammattwalters.com",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/thing-it/devtools/issues"
+    "url": "https://github.com/thing-it/integrate-meta-dependencies/issues"
   },
-  "homepage": "https://github.com/thing-it/devtools#readme",
+  "homepage": "https://github.com/thing-it/integrate-meta-dependencies#readme",
   "dependencies": {
     "async": "^2.5.0",
     "chalk": "^1.1.3",
